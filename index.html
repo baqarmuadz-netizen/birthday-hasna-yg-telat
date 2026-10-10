@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Selamat Ulang Tahun ✦</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,500&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg1:#05060f;--bg2:#161236;--ink:#eae6ff;--glow:#b9a8ff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(ellipse at 50% 120%,var(--bg2),var(--bg1) 65%);color:var(--ink);font-family:'Cormorant Garamond',Georgia,serif;overflow:hidden}
+canvas{position:fixed;inset:0;width:100%;height:100%}
+main{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:18px}
+h1{font-weight:300;font-style:italic;font-size:clamp(34px,9vw,64px);margin:0;text-shadow:0 0 24px var(--glow);opacity:0;transition:opacity 1.6s}
+.moon{font-size:44px;filter:drop-shadow(0 0 14px var(--glow));animation:float 5s ease-in-out infinite}
+p{margin:0;font-size:clamp(19px,5vw,26px);line-height:1.5;max-width:520px;opacity:0;transform:translateY(10px);transition:opacity 1.4s,transform 1.4s}
+.show{opacity:1!important;transform:none!important}
+button{font:inherit;font-style:italic;font-size:20px;color:var(--ink);background:rgba(185,168,255,.1);border:1px solid rgba(185,168,255,.5);border-radius:999px;padding:12px 30px;cursor:pointer;box-shadow:0 0 22px rgba(185,168,255,.25);transition:.3s}
+button:hover{background:rgba(185,168,255,.22)}
+.hide{opacity:0;pointer-events:none;position:absolute}
+@keyframes float{50%{transform:translateY(-10px)}}
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+<main>
+  <div class="moon">🌙</div>
+  <h1 id="judul"></h1>
+  <p>Di antara jutaan bintang, ada satu yang selalu bikin aku senyum-senyum sendiri.</p>
+  <p>Semoga semua doamu terbang tinggi dan satu per satu jadi bintang yang nyata.</p>
+  <p>Semoga harimu seindah langit malam ini ✦</p>
+  <p>Dan kalau boleh jujur… aku senang kamu lahir ke dunia ini.</p>
+  <button id="btn">buka ucapannya ✦</button>
+</main>
+<script>
+// Ganti nama lewat link: ...?nama=Rina  (atau edit teks default di bawah)
+var nama=new URLSearchParams(location.search).get('nama')||'Hasna';
+var judul=document.getElementById('judul');
+judul.textContent='Selamat ulang tahun, '+nama+' ✦';
+document.title='Selamat Ulang Tahun, '+nama;
+
+document.getElementById('btn').onclick=function(){
+  this.classList.add('hide');
+  judul.classList.add('show');
+  document.querySelectorAll('p').forEach(function(p,i){setTimeout(function(){p.classList.add('show')},1800+i*1900)});
+  for(var i=0;i<4;i++)setTimeout(shoot,i*500);
+};
+
+var c=document.getElementById('sky'),x=c.getContext('2d'),W,H,S=[],M=[];
+function size(){var d=window.devicePixelRatio||1;W=innerWidth;H=innerHeight;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0);
+  S=[];for(var i=0;i<Math.min(200,W*H/4500);i++)S.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.3,p:Math.random()*6.28,s:Math.random()*.02+.005})}
+function shoot(){M.push({x:Math.random()*W*.8+W*.2,y:Math.random()*H*.4,l:0})}
+function draw(){
+  x.clearRect(0,0,W,H);
+  S.forEach(function(s){s.p+=s.s;var a=.35+.65*Math.abs(Math.sin(s.p));x.beginPath();x.arc(s.x,s.y,s.r,0,6.28);x.fillStyle='rgba(234,230,255,'+a+')';x.shadowColor='#b9a8ff';x.shadowBlur=s.r*5;x.fill()});
+  x.shadowBlur=0;
+  M=M.filter(function(m){m.l+=1;m.x-=9;m.y+=5;var g=x.createLinearGradient(m.x,m.y,m.x+90,m.y-50);g.addColorStop(0,'rgba(255,255,255,'+Math.max(0,1-m.l/45)+')');g.addColorStop(1,'rgba(255,255,255,0)');x.strokeStyle=g;x.lineWidth=2;x.beginPath();x.moveTo(m.x,m.y);x.lineTo(m.x+90,m.y-50);x.stroke();return m.l<45});
+  if(Math.random()<.004)shoot();
+  requestAnimationFrame(draw)
+}
+addEventListener('resize',size);size();draw();
+</script>
+</body>
+</html>
